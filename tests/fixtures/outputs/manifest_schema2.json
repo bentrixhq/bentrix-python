@@ -1,0 +1,93 @@
+{
+ "schema_version": 2,
+ "name": "dir_lgbm_v4",
+ "interval": "H1",
+ "frames": [
+  "H1",
+  "H4"
+ ],
+ "markets": null,
+ "lookback": 48,
+ "input": {
+  "fields": [
+   "open",
+   "high",
+   "low",
+   "close",
+   "tick_volume"
+  ],
+  "transform": "zscore"
+ },
+ "outputs": [
+  {
+   "name": "direction",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "horizon": {
+    "steps": 4
+   },
+   "slice": [
+    0,
+    4
+   ],
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   }
+  },
+  {
+   "name": "size",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "ratio",
+   "horizon": {
+    "until": "next_output"
+   },
+   "slice": [
+    4,
+    5
+   ],
+   "suggested_meaning": {
+    "reads": "size",
+    "gates": "output:dir_lgbm_v4.direction"
+   }
+  },
+  {
+   "name": "path",
+   "kind": "path",
+   "form": "line",
+   "steps": 3,
+   "as": "return",
+   "pick": "first",
+   "slice": [
+    5,
+    8
+   ]
+  },
+  {
+   "name": "regime",
+   "kind": "classes",
+   "names": [
+    "up",
+    "flat",
+    "down"
+   ],
+   "exclusive": true,
+   "softmax": true,
+   "slice": [
+    8,
+    11
+   ]
+  }
+ ]
+}

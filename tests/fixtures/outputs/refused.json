@@ -1,0 +1,1173 @@
+[
+ {
+  "case": "path_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "path",
+   "symbol": "EURUSD",
+   "kind": "path",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 2
+   },
+   "values": [
+    {
+     "close": 1.1
+    },
+    {
+     "close": 1.2,
+     "high": 1.21,
+     "low": 1.19
+    }
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "scalar_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 0.61
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs",
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "classes_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "regime_v1",
+   "output": "classes",
+   "symbol": "EURUSD",
+   "kind": "classes",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "p": {
+      "up": 0.5,
+      "flat": 0.3,
+      "down": 0.2
+     }
+    }
+   ],
+   "names": [
+    "up",
+    "flat",
+    "down"
+   ],
+   "exclusive": true,
+   "persistent": true,
+   "suggested_meaning": {
+    "reads": "state",
+    "classes": {
+     "up": "buy",
+     "down": "sell",
+     "flat": "nothing"
+    }
+   },
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "quantiles_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "fan_v2",
+   "output": "quantiles",
+   "symbol": "EURUSD",
+   "kind": "quantiles",
+   "units": "price",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 2
+   },
+   "values": [
+    {
+     "q": {
+      "0.1": 1.09,
+      "0.5": 1.1,
+      "0.9": 1.11
+     }
+    },
+    {
+     "q": {
+      "0.1": 1.088,
+      "0.5": 1.1,
+      "0.9": 1.112
+     }
+    }
+   ],
+   "levels": [
+    0.1,
+    0.5,
+    0.9
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "rank_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "xs_rank",
+   "output": "rank",
+   "symbol": "AAPL",
+   "kind": "rank",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "business_days": 20
+   },
+   "values": [
+    {
+     "value": 0.62
+    }
+   ],
+   "universe": 4871,
+   "date_ms": 1704110400000,
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "position_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "alloc_v1",
+   "output": "position",
+   "symbol": "EURUSD",
+   "kind": "position",
+   "range": [
+    -1,
+    1
+   ],
+   "units": "fraction",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "until": "next_output"
+   },
+   "values": [
+    {
+     "targets": {
+      "EURUSD": -0.5,
+      "GBPUSD": 0.25
+     }
+    }
+   ],
+   "markets": [
+    "EURUSD",
+    "GBPUSD"
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "weights_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "alloc_v1",
+   "output": "weights",
+   "symbol": "EURUSD",
+   "kind": "weights",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "w": {
+      "EURUSD": 0.6,
+      "GBPUSD": 0.4
+     }
+    }
+   ],
+   "markets": [
+    "EURUSD",
+    "GBPUSD"
+   ],
+   "long_only": true,
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "event_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "breakout",
+   "output": "event",
+   "symbol": "XAUUSD",
+   "kind": "event",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "score": 0.8,
+     "within_steps": 3,
+     "name": "breakout"
+    }
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "levels_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "barrier_v1",
+   "output": "levels",
+   "symbol": "EURUSD",
+   "kind": "levels",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "until": "levels"
+   },
+   "values": [
+    {
+     "levels": {
+      "stop": 1.09,
+      "target": 1.12
+     },
+     "p": {
+      "target": 0.55
+     },
+     "until_ms": 1704196800000
+    }
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "action_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "ppo_v3",
+   "output": "action",
+   "symbol": "EURUSD",
+   "kind": "action",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "intent": "buy",
+     "size": 0.5,
+     "size_units": "fraction"
+    }
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "text_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "llm_note",
+   "output": "text",
+   "symbol": "EURUSD",
+   "kind": "text",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "text": "the trend held above the weekly open"
+    }
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "series_carrying_put_ms",
+  "why": "put_ms is Bentrix's to stamp, the instant the output arrives; a put never carries it",
+  "spec": {
+   "schema_version": 1,
+   "model": "pushed_rsi",
+   "output": "series",
+   "symbol": "EURUSD",
+   "kind": "series",
+   "range": [
+    0,
+    100
+   ],
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "lines": {
+      "rsi": 61.2,
+      "signal": 58.0
+     }
+    },
+    {
+     "lines": {
+      "rsi": 63.0,
+      "signal": 59.1
+     }
+    }
+   ],
+   "names": [
+    "rsi",
+    "signal"
+   ],
+   "put_ms": 1704110400001
+  }
+ },
+ {
+  "case": "scalar_above_its_range",
+  "why": "values[1].value the output answers 0 to 1; 1.3 is outside it",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 1.3
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ },
+ {
+  "case": "rank_above_0_to_1",
+  "why": "values[0].value the output answers 0 to 1; 1.5 is outside it",
+  "spec": {
+   "schema_version": 1,
+   "model": "xs_rank",
+   "output": "rank",
+   "symbol": "AAPL",
+   "kind": "rank",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "business_days": 20
+   },
+   "values": [
+    {
+     "value": 1.5
+    }
+   ],
+   "universe": 4871,
+   "date_ms": 1704110400000
+  }
+ },
+ {
+  "case": "position_outside_its_range",
+  "why": "values[0].targets.EURUSD the output answers -1 to 1; 2 is outside it",
+  "spec": {
+   "schema_version": 1,
+   "model": "alloc_v1",
+   "output": "position",
+   "symbol": "EURUSD",
+   "kind": "position",
+   "range": [
+    -1,
+    1
+   ],
+   "units": "fraction",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "until": "next_output"
+   },
+   "values": [
+    {
+     "targets": {
+      "EURUSD": 2.0,
+      "GBPUSD": 0.25
+     }
+    }
+   ],
+   "markets": [
+    "EURUSD",
+    "GBPUSD"
+   ]
+  }
+ },
+ {
+  "case": "position_naming_a_market_not_named",
+  "why": "values[0].targets USDJPY is not one of the markets named",
+  "spec": {
+   "schema_version": 1,
+   "model": "alloc_v1",
+   "output": "position",
+   "symbol": "EURUSD",
+   "kind": "position",
+   "range": [
+    -1,
+    1
+   ],
+   "units": "fraction",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "until": "next_output"
+   },
+   "values": [
+    {
+     "targets": {
+      "EURUSD": -0.5,
+      "GBPUSD": 0.25,
+      "USDJPY": 0.1
+     }
+    }
+   ],
+   "markets": [
+    "EURUSD",
+    "GBPUSD"
+   ]
+  }
+ },
+ {
+  "case": "event_score_above_1",
+  "why": "values[0].score the output answers 0 to 1; 1.2 is outside it",
+  "spec": {
+   "schema_version": 1,
+   "model": "breakout",
+   "output": "event",
+   "symbol": "XAUUSD",
+   "kind": "event",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "score": 1.2,
+     "within_steps": 3,
+     "name": "breakout"
+    }
+   ]
+  }
+ },
+ {
+  "case": "classes_probability_above_1",
+  "why": "values[0].p.up the output answers 0 to 1; 1.4 is outside it",
+  "spec": {
+   "schema_version": 1,
+   "model": "regime_v1",
+   "output": "classes",
+   "symbol": "EURUSD",
+   "kind": "classes",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "p": {
+      "up": 1.4,
+      "flat": 0.3,
+      "down": 0.2
+     }
+    }
+   ],
+   "names": [
+    "up",
+    "flat",
+    "down"
+   ],
+   "exclusive": true,
+   "persistent": true,
+   "suggested_meaning": {
+    "reads": "state",
+    "classes": {
+     "up": "buy",
+     "down": "sell",
+     "flat": "nothing"
+    }
+   }
+  }
+ },
+ {
+  "case": "classes_naming_a_class_not_named",
+  "why": "values[0].p sideways is not one of the classes up, flat, down",
+  "spec": {
+   "schema_version": 1,
+   "model": "regime_v1",
+   "output": "classes",
+   "symbol": "EURUSD",
+   "kind": "classes",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "p": {
+      "up": 0.5,
+      "flat": 0.3,
+      "down": 0.2,
+      "sideways": 0.1
+     }
+    }
+   ],
+   "names": [
+    "up",
+    "flat",
+    "down"
+   ],
+   "exclusive": true,
+   "persistent": true,
+   "suggested_meaning": {
+    "reads": "state",
+    "classes": {
+     "up": "buy",
+     "down": "sell",
+     "flat": "nothing"
+    }
+   }
+  }
+ },
+ {
+  "case": "classes_without_names",
+  "why": "names a classes output names its classes",
+  "spec": {
+   "schema_version": 1,
+   "model": "regime_v1",
+   "output": "classes",
+   "symbol": "EURUSD",
+   "kind": "classes",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "p": {
+      "up": 0.5,
+      "flat": 0.3,
+      "down": 0.2
+     }
+    }
+   ],
+   "exclusive": true,
+   "persistent": true,
+   "suggested_meaning": {
+    "reads": "state",
+    "classes": {
+     "up": "buy",
+     "down": "sell",
+     "flat": "nothing"
+    }
+   }
+  }
+ },
+ {
+  "case": "series_without_names",
+  "why": "names a series output names its lines",
+  "spec": {
+   "schema_version": 1,
+   "model": "pushed_rsi",
+   "output": "series",
+   "symbol": "EURUSD",
+   "kind": "series",
+   "range": [
+    0,
+    100
+   ],
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "lines": {
+      "rsi": 61.2,
+      "signal": 58.0
+     }
+    },
+    {
+     "lines": {
+      "rsi": 63.0,
+      "signal": 59.1
+     }
+    }
+   ]
+  }
+ },
+ {
+  "case": "quantiles_level_of_1",
+  "why": "levels each level is between 0 and 1",
+  "spec": {
+   "schema_version": 1,
+   "model": "fan_v2",
+   "output": "quantiles",
+   "symbol": "EURUSD",
+   "kind": "quantiles",
+   "units": "price",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 2
+   },
+   "values": [
+    {
+     "q": {
+      "0.1": 1.09,
+      "0.5": 1.1,
+      "0.9": 1.11
+     }
+    },
+    {
+     "q": {
+      "0.1": 1.088,
+      "0.5": 1.1,
+      "0.9": 1.112
+     }
+    }
+   ],
+   "levels": [
+    0.1,
+    0.5,
+    1.0
+   ]
+  }
+ },
+ {
+  "case": "weights_long_only_not_summing_to_1",
+  "why": "values[0].w long-only weights sum to 1; these sum to 1.1",
+  "spec": {
+   "schema_version": 1,
+   "model": "alloc_v1",
+   "output": "weights",
+   "symbol": "EURUSD",
+   "kind": "weights",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "w": {
+      "EURUSD": 0.7,
+      "GBPUSD": 0.4
+     }
+    }
+   ],
+   "markets": [
+    "EURUSD",
+    "GBPUSD"
+   ],
+   "long_only": true
+  }
+ },
+ {
+  "case": "action_of_an_unknown_intent",
+  "why": "values[0].intent \"hold\" is not buy, sell, close_buys, close_sells, nothing",
+  "spec": {
+   "schema_version": 1,
+   "model": "ppo_v3",
+   "output": "action",
+   "symbol": "EURUSD",
+   "kind": "action",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "intent": "hold",
+     "size": 0.5,
+     "size_units": "fraction"
+    }
+   ]
+  }
+ },
+ {
+  "case": "action_of_a_negative_size",
+  "why": "values[0].size -0.5 is below 0; the intent says the side",
+  "spec": {
+   "schema_version": 1,
+   "model": "ppo_v3",
+   "output": "action",
+   "symbol": "EURUSD",
+   "kind": "action",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "intent": "buy",
+     "size": -0.5,
+     "size_units": "fraction"
+    }
+   ]
+  }
+ },
+ {
+  "case": "text_longer_than_2000",
+  "why": "values[0].text is longer than 2000 characters",
+  "spec": {
+   "schema_version": 1,
+   "model": "llm_note",
+   "output": "text",
+   "symbol": "EURUSD",
+   "kind": "text",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+   ]
+  }
+ },
+ {
+  "case": "levels_naming_none",
+  "why": "values[0].levels names no level",
+  "spec": {
+   "schema_version": 1,
+   "model": "barrier_v1",
+   "output": "levels",
+   "symbol": "EURUSD",
+   "kind": "levels",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "until": "levels"
+   },
+   "values": [
+    {
+     "levels": {},
+     "p": {
+      "target": 0.55
+     },
+     "until_ms": 1704196800000
+    }
+   ]
+  }
+ },
+ {
+  "case": "meaning_word_not_the_products",
+  "why": "suggested_meaning \"profit\" is not one of the meaning's words: buy, sell, nothing, up, down, flat, in, out, close",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 0.61
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "profit",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ },
+ {
+  "case": "meaning_threshold_outside_the_range",
+  "why": "suggested_meaning the output answers 0 to 1; 1.5 is outside it",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 0.61
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 1.5,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ },
+ {
+  "case": "meaning_on_a_text",
+  "why": "suggested_meaning a text output carries no meaning",
+  "spec": {
+   "schema_version": 1,
+   "model": "llm_note",
+   "output": "text",
+   "symbol": "EURUSD",
+   "kind": "text",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "values": [
+    {
+     "text": "the trend held above the weekly open"
+    }
+   ],
+   "suggested_meaning": {
+    "reads": "direction"
+   }
+  }
+ },
+ {
+  "case": "horizon_of_0_steps",
+  "why": "horizon.steps is at least 1",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 0
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 0.61
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ },
+ {
+  "case": "horizon_until_an_unknown",
+  "why": "horizon.until \"tomorrow\" is not levels or next_output",
+  "spec": {
+   "schema_version": 1,
+   "model": "alloc_v1",
+   "output": "position",
+   "symbol": "EURUSD",
+   "kind": "position",
+   "range": [
+    -1,
+    1
+   ],
+   "units": "fraction",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "until": "tomorrow"
+   },
+   "values": [
+    {
+     "targets": {
+      "EURUSD": -0.5,
+      "GBPUSD": 0.25
+     }
+    }
+   ],
+   "markets": [
+    "EURUSD",
+    "GBPUSD"
+   ]
+  }
+ },
+ {
+  "case": "model_label_not_a_label",
+  "why": "model \"Dir V4\" is not [a-z0-9_]{1,32}",
+  "spec": {
+   "schema_version": 1,
+   "model": "Dir V4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 0.61
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ },
+ {
+  "case": "range_not_a_range",
+  "why": "range [1, 0] is not a range",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    1,
+    0
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [
+    {
+     "value": 0.73
+    },
+    {
+     "value": 0.61
+    },
+    {
+     "value": 0.55
+    },
+    {
+     "value": 0.52
+    }
+   ],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ },
+ {
+  "case": "no_value",
+  "why": "values holds no value",
+  "spec": {
+   "schema_version": 1,
+   "model": "dir_v4",
+   "output": "direction",
+   "symbol": "EURUSD",
+   "kind": "scalar",
+   "range": [
+    0,
+    1
+   ],
+   "units": "probability",
+   "anchor": {
+    "time_ms": 1704110400000
+   },
+   "horizon": {
+    "steps": 4
+   },
+   "values": [],
+   "epoch": 17,
+   "suggested_meaning": {
+    "reads": "direction",
+    "high_means": "buy",
+    "low_means": "sell",
+    "act_above": 0.6,
+    "act_below": 0.4
+   },
+   "look": {
+    "rising": "#4C9BFFFF",
+    "label": "Direction v4"
+   },
+   "note": "trained 2019-2024, H1, features: 48 closes + 12 ATRs"
+  }
+ }
+]

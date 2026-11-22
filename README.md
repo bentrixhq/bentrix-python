@@ -36,7 +36,7 @@ Every tool is a method grouped by its domain (`b.workspace`, `b.chart`, `b.study
 
 ## The engine in your own process
 
-`bentrix.local`, `bentrix.backtest`, `bentrix.data` and `bentrix.gym` without a running Bentrix (the module `bentrix._native`) use Bentrix's engine library, which is not part of this repository.
+`bentrix.local`, `bentrix.backtest`, `bentrix.data` and `bentrix.gym` without a running Bentrix (the module `bentrix._native`) run Bentrix's engine inside your program, with no window. The engine is Bentrix's own library, `libbentrix`, which Bentrix's installer puts in its folder (`%LOCALAPPDATA%\Programs\BENTRIX\libbentrix.dll` on Windows) and the binding finds there; `BENTRIX_FFI` (the file) or `BENTRIX_FFI_DIR` (its folder) names another. It runs for a computer signed in to Bentrix with Plus or Pro; with Free, connect to the running application as above.
 
 ## Documentation
 
@@ -44,4 +44,4 @@ Every method, its arguments, the permission it needs and what it answers: **http
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE). It covers this source code only. Bentrix's engine library that some of these bindings load (`libbentrix`), and the Bentrix application, are Bentrix's own and distributed under their own terms.
+MIT — see [LICENSE](LICENSE). It covers this source code only: Bentrix's engine library (`libbentrix`) and the Bentrix application are Bentrix's own, under their own terms.

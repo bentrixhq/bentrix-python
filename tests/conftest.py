@@ -12,6 +12,11 @@ ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
 
+# **The suite's tapes open the engine with no account**: a library built with debug assertions reads this
+# (the walks of every language, run as children, inherit it); a release library compiles the name out and asks for
+# Plus or Pro, signed in on this computer — so this suite against a shipped library needs such a computer.
+os.environ.setdefault("BENTRIX_ENGINE_UNPAID", "1")
+
 # The SDK generated from the Rust crate's fixture catalogue. Pinned by a snapshot test over there; here it
 # is imported as `bentrix._fixture_sdk` so its relative import of `._runtime` resolves exactly as the real
 # generated module's does.

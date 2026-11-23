@@ -1,20 +1,30 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bentrix"
-version = "0.1.0"
-description = "The typed Python client of a running BENTRIX, generated from its capability catalogue."
+version = "0.1.382"
+description = "The Python client of Bentrix: every capability of a running Bentrix over its MCP endpoint, and Bentrix's engine in your own program."
+readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Bentrix", email = "dev@bentrix.net" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://bentrix.net"
+Documentation = "https://bentrix.net/en/docs/sdk/python/"
+Source = "https://github.com/bentrixhq/bentrix-python"
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+engine = ["numpy>=1.21"]
+gym = ["numpy>=1.21", "gymnasium>=0.29"]
 
 [tool.setuptools]
 packages = ["bentrix"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]

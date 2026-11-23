@@ -12,11 +12,18 @@ Python 3.9 or later, and Bentrix open on the same computer.
 
 ## Install
 
-From a clone of this repository:
+```bash
+pip install bentrix
+python -c "import bentrix; print(bentrix.CATALOGUE_VERSION)"
+```
+
+Or from a clone of this repository: `pip install .`
+
+The client needs nothing else. The engine's modules below — `bentrix.data`, `bentrix.gym`, `bentrix.forecast`, `bentrix.vector` and `bentrix.live` — need NumPy, and the Gym's spaces Gymnasium:
 
 ```bash
-pip install .
-python -c "import bentrix; print(bentrix.CATALOGUE_VERSION)"
+pip install "bentrix[engine]"    # NumPy
+pip install "bentrix[gym]"       # NumPy and Gymnasium
 ```
 
 ## Connect
@@ -44,4 +51,4 @@ Every method, its arguments, the permission it needs and what it answers: **http
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE). It covers this source code only: Bentrix's engine library (`libbentrix`) and the Bentrix application are Bentrix's own, under their own terms.
+MIT — see [LICENSE](https://github.com/bentrixhq/bentrix-python/blob/main/LICENSE). It covers this source code only: Bentrix's engine library (`libbentrix`) and the Bentrix application are Bentrix's own, under their own terms.

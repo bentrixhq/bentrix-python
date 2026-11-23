@@ -33,7 +33,7 @@ from typing import Any, Callable, Dict, Generic, Iterator, Optional, Tuple, Type
 
 PROTOCOL_VERSION = "2026-07-28"
 CLIENT_NAME = "bentrix-python-sdk"
-CLIENT_VERSION = "0.1.0"
+CLIENT_VERSION = "0.1.382"
 
 #: **Busy, try again**: the JSON-RPC code Bentrix answers when it refused a request BEFORE doing
 #: anything with it — one program's 20 calls a second spent, too many connections or streams, a task

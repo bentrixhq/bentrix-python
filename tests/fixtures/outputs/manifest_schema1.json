@@ -1,1 +1,0 @@
-{"schema_version": 1, "name": "dir_v1", "interval": "H1", "frames": ["H1"], "markets": ["EURUSD", "XAUUSD"], "lookback": 48, "steps": 4, "form": "candlestick", "input": {"fields": ["open", "high", "low", "close", "tick_volume"], "transform": "zscore"}, "output": {"kind": "return", "pick": "last"}}

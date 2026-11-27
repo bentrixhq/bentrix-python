@@ -1,4 +1,4 @@
-"""A person's own study, run by BENTRIX in a study host (``python -I -m bentrix.host <script>``).
+"""A person's own study, run by Bentrix in a study host (``python -I -m bentrix.host <script>``).
 
     import numpy as np
     from bentrix.study import study, Line, Input, Price
@@ -25,7 +25,7 @@ bar takes none; a channel left out takes none on any bar::
     up = bars["close"] >= bars["open"]
     return {"sma": sma}, {"sma": np.where(up, rgba(38, 166, 154), rgba(239, 83, 80))}
 
-The declaration is the ``custom_study_spec`` document (schema 1); BENTRIX validates it and refuses a
+The declaration is the ``custom_study_spec`` document (schema 1); Bentrix validates it and refuses a
 spec by name — an id that is not ``[a-z0-9_]{1,32}``, more than 64 lines, a level outside a fixed scale,
 an input default outside its bounds, a repeated name, an ``about`` that advises.
 

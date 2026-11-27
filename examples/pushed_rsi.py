@@ -1,6 +1,6 @@
-"""A pushed study: the agent's own RSI, computed here and drawn on a BENTRIX chart.
+"""A pushed study: the agent's own RSI, computed here and drawn on a Bentrix chart.
 
-The values are this script's: BENTRIX draws what it is handed and never computes them. The bars are
+The values are this script's: Bentrix draws what it is handed and never computes them. The bars are
 the workbench's own, read up to its cursor and never past it, so a pushed study cannot see the future
 either: a time past the cursor is refused by name.
 

@@ -1,4 +1,4 @@
-"""**A CleanRL-style loop on a BENTRIX workbench**: one file, no framework — vectorised
+"""**A CleanRL-style loop on a Bentrix workbench**: one file, no framework — vectorised
 environments over workbenches made alike (``bentrix.gym.make_vec``), a random policy standing in for
 yours, and the run's identity logged where a tracker is installed.
 

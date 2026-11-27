@@ -1,16 +1,16 @@
 """**The same code on paper and REAL**: a ``Strategy`` and a Gymnasium environment on a
-workbench that runs on the market's own clock, through the running BENTRIX.
+workbench that runs on the market's own clock, through the running Bentrix.
 
 A paper or REAL workbench lives in the application — its ticks come from the person's MetaTrader
 (or the venue the account is on), its clock is the market's — so this module talks to it through the
 agents' own door (``bentrix.connect()``, MCP), never through an engine of its own. That has one
 consequence that is the point: **an order to a real account goes where every agent's goes**:
-proposed in BENTRIX's trade panel for the person's Send (``outcome: awaiting_person``), or, under the
+proposed in Bentrix's trade panel for the person's Send (``outcome: awaiting_person``), or, under the
 person's agents' One-click, sent within the account's caps (``outcome: sent``); refused ``expired``
 past its validity and ``refused_by_cap`` past the caps. Nothing here can reach an account the
 agent's pairing was not given.
 
-- ``Remote`` — a running BENTRIX as a *door*: ``call(tool, **args)``, as ``bentrix.local.Local``
+- ``Remote`` — a running Bentrix as a *door*: ``call(tool, **args)``, as ``bentrix.local.Local``
   answers it. Everything below needs only that one method, so a laboratory workbench in this
   process drives the same code (which is how it is tested).
 - ``run(strategy, bench, symbol, interval)`` — ``on_bar`` once for each candle as it closes (the
@@ -60,7 +60,7 @@ CADENCES = ("bar_close",)
 
 
 class Remote:
-    """**A running BENTRIX as a door**: ``call(tool, **args)`` over the agents' connection
+    """**A running Bentrix as a door**: ``call(tool, **args)`` over the agents' connection
     (``bentrix.connect()`` when none is given)."""
 
     def __init__(self, client: Any = None):
@@ -68,10 +68,24 @@ class Remote:
             import bentrix
 
             client = bentrix.connect()
-        self.client = client
+        # A ``bentrix.Bentrix`` from ``connect`` is accepted for its connection (the application's door).
+        door = getattr(client, "_door", None)
+        self.client = getattr(door, "client", client)
 
     def call(self, tool: str, **args: Any) -> Any:
         return self.client.call(tool, {k: v for k, v in args.items() if v is not None})
+
+
+def _bench_door(bench: Any, symbol: Optional[str], door: Any) -> Any:
+    """A ``bentrix.Bench`` as an address, its market and its door (the application's, or the engine's); an address
+    as it is, with ``door`` or the running application. A symbol is named, or the workbench's one market."""
+    from .core import Bench as _Bench
+
+    if isinstance(bench, _Bench):
+        return bench.uri, symbol or bench._symbol(None), door or bench.bx._door
+    if symbol is None:
+        raise ValueError("name the symbol, or pass a bentrix.Bench, whose one market is the symbol")
+    return bench, symbol, door or Remote()
 
 
 def _uri(bench: str, tail: str) -> str:
@@ -120,7 +134,10 @@ class _Closes:
 
 
 def _outcome(answer: Any) -> str:
-    return (answer or {}).get("outcome") or "sent"
+    # A real account's two words are its outcome; any other venue sent it (its own word, accepted or filled, is
+    # the order's answer's, not this event's).
+    o = (answer or {}).get("outcome")
+    return o if o in OUTCOMES else "sent"
 
 
 class LiveContext(Context):
@@ -141,7 +158,7 @@ class LiveContext(Context):
             answer = self._local.call(tool, **args)
             event["outcome"] = _outcome(answer)
             last = (answer or {}).get("last_answer") or {}
-            if "refused" in last:
+            if last.get("outcome") == "refused":
                 event["outcome"], event["refused"] = "refused", last.get("reason")
         except Exception as e:  # the tool's refusal, in its own words
             event["outcome"], event["refused"] = "refused", str(e)
@@ -166,8 +183,8 @@ class LiveContext(Context):
 
 def run(
     strategy: Strategy,
-    bench: str,
-    symbol: str,
+    bench: Any,
+    symbol: Optional[str] = None,
     interval: str = "H1",
     door: Any = None,
     max_bars: Optional[int] = None,
@@ -178,8 +195,8 @@ def run(
     """**Run ``strategy`` on a live workbench** (module doc) from the next candle that closes, for
     ``max_bars`` candles (forever when ``None``) or until ``idle_limit`` waits answer none. Answers
     how many candles it saw, the journal (each candle's open time and prices, and whether a newer one
-    had already closed), the order events and the book."""
-    door = door or Remote()
+    had already closed), the order events and the book. ``bench`` may be a ``bentrix.Bench``: its door, its market."""
+    bench, symbol, door = _bench_door(bench, symbol, door)
     closes = _Closes(door, bench, symbol, interval, timeout_ms, idle_limit, before_wait)
     ctx = LiveContext(door, bench, symbol, strategy)
     strategy.on_start(ctx)
@@ -209,8 +226,8 @@ class LiveEnv(TradingEnv):
 
     def __init__(
         self,
-        bench: str,
-        symbol: str,
+        bench: Any,
+        symbol: Optional[str] = None,
         interval: str = "H1",
         window: int = 32,
         action: str = "discrete",
@@ -228,7 +245,7 @@ class LiveEnv(TradingEnv):
         max_points: float = 10_000.0,
         draw: Optional[str] = None,
     ):
-        door = door or Remote()
+        bench, symbol, door = _bench_door(bench, symbol, door)
         super().__init__(
             bench, symbol=symbol, interval=interval, window=window, action=action, reward=reward, lots=lots, deadband=deadband, ruin=ruin,
             local=door, participation=participation, impact=impact, max_points=max_points, follow=True, max_steps=max_steps,
@@ -492,13 +509,25 @@ class Parity:
         return self.compared > 0 and not self.differ and self.actions_equal == self.actions_compared
 
 
-def parity(journal: List[Dict[str, Any]], local: Any, bench: str, symbol: str, interval: str = "H1", window: int = 32, model: Optional[Callable[[Any], Any]] = None) -> Parity:
+def parity(journal: List[Dict[str, Any]], local: Any, bench: Optional[str] = None, symbol: Optional[str] = None, interval: str = "H1", window: int = 32, model: Optional[Callable[[Any], Any]] = None) -> Parity:
     """**The live journal against a laboratory workbench** over the recording the live one filled
     (module doc). The laboratory workbench is taken back to its start, its deals undone, and
     moved forward to each decision's close: give it one made for the comparison. A journal from
     ``run`` compares the candle each decision saw; one from ``LiveEnv`` the features — the Rust
     environment's own observation at that close, as a step there would read it — and, with ``model``,
-    the action."""
+    the action.
+
+    The laboratory workbench is a ``bentrix.Bench`` of the engine in this process
+    (``parity(journal, lab, interval="H1")``, its one market the symbol unless one is named), or the form of
+    before: the engine, the workbench's address and the symbol."""
+    from .core import Bench as _Bench, Error
+
+    if isinstance(local, _Bench):
+        if local.bx.engine is None:
+            raise Error("parity moves the laboratory workbench's clock: open it with bentrix.open, the engine in this process")
+        bench, symbol, local = local.uri, symbol or local._symbol(None), local.bx.engine
+    elif bench is None or symbol is None:
+        raise ValueError("name the laboratory workbench's address and its symbol, or pass a bentrix.Bench")
     env = TradingEnv(bench, symbol=symbol, interval=interval, window=window, local=local, episode="tape")
     env.reset(seed=0)
     local.call("replay_seek", bench=bench, to_ms=env.first, undo_deals=True)

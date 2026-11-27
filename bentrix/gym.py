@@ -1,8 +1,8 @@
-"""**The Gym**: a Gymnasium environment over a BENTRIX workbench.
+"""**The Gym**: a Gymnasium environment over a Bentrix workbench.
 
-**The environment is BENTRIX's, in Rust** (``env_make``, ``env_reset``, ``env_step`` …), so every language reaches the same one, and ``TradingEnv``
+**The environment is Bentrix's, in Rust** (``env_make``, ``env_reset``, ``env_step`` …), so every language reaches the same one, and ``TradingEnv``
 here is its client: through your own process's engine (``bentrix.local``) or through a running
-BENTRIX (``bentrix.live.Remote``), whichever ``local`` is. What it computes is the Rust module's
+Bentrix (``bentrix.live.Remote``), whichever ``local`` is. What it computes is the Rust module's
 (``crates/bentrix-shell/src/agenttools/env.rs``); its doc is the reference, in brief:
 
 - **Contract** — Gymnasium's: ``reset(seed, options) -> (obs, info)``; ``step(a) -> (obs, reward,
@@ -54,17 +54,7 @@ except ImportError:  # pragma: no cover - exercised where Gymnasium is absent
     _spaces = None
     _Base = object
 
-REWARDS = (
-    "pnl@1",
-    "log_return@1",
-    "dsr@1",
-    "dsr_dd_penalty@1",
-    "cvar_lagrangian@1",
-    "cost_aware_vol_scaled@1",
-    "rule_adherence@1",
-    "risk_budget@1",
-)
-PRODUCT_HYPOTHESES = ("rule_adherence@1", "risk_budget@1")
+from bentrix.rewards import PRODUCT_HYPOTHESES, REWARDS  # noqa: E402  (one list, the rewards module's)
 EPISODES = ("tape", "window", "session")
 ACTIONS = ("discrete", "continuous", "order")
 DAY_MS = 86_400_000
@@ -131,7 +121,7 @@ class TradingEnv(_Base):
 
     def __init__(
         self,
-        bench: str,
+        bench: Any,
         symbol: Optional[str] = None,
         interval: str = "H1",
         window: int = 32,
@@ -158,6 +148,13 @@ class TradingEnv(_Base):
             raise ValueError(f"{reward} is not a reward plugin; one of {', '.join(REWARDS)}")
         if participation is not None and not 0.0 < participation <= 1.0:
             raise ValueError(f"participation {participation} is not a share in (0, 1]")
+        # A ``bentrix.Bench`` brings its own door: the engine in this process (its ``Local``), or the running
+        # application (its connection answers ``call`` as ``Local`` does, and arms its own workbenches).
+        from .core import Bench as _Bench
+
+        if isinstance(bench, _Bench):
+            door = bench.bx._door
+            local, bench = getattr(door, "local", door), bench.uri
         self.local = local if local is not None else Local()
         if hasattr(self.local, "arm") and not follow:
             try:
@@ -257,10 +254,15 @@ def register() -> None:
 
 def make_vec(benches: list, local: Optional[Local] = None, **kwargs):
     """**One environment per workbench, stepped together** — a ``SyncVectorEnv`` over one embedded
-    BENTRIX, each environment on its own workbench (benches made alike are the same conditions)."""
+    Bentrix, each environment on its own workbench (benches made alike are the same conditions): a list of
+    ``bentrix.Bench``, or of addresses with their ``local``."""
     if _gym is None:
         raise RuntimeError("Gymnasium is not installed: pip install gymnasium")
-    local = local or Local()
+    from .core import Bench as _Bench
+
+    # A list of ``bentrix.Bench`` brings its own door; addresses need one, ``local`` or the person's own workspace.
+    if local is None and not all(isinstance(b, _Bench) for b in benches):
+        local = Local()
     return _gym.vector.SyncVectorEnv([(lambda b=b: TradingEnv(b, local=local, **kwargs)) for b in benches])
 
 

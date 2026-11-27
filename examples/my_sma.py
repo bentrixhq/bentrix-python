@@ -1,6 +1,6 @@
 """A hosted overlay: the simple moving average of an applied price.
 
-Put it in BENTRIX's indicators folder; it appears under *My indicators*. BENTRIX runs it with
+Put it in Bentrix's indicators folder; it appears under *My indicators*. Bentrix runs it with
 ``python -I -m bentrix.host my_sma.py`` and hands it the chart's bars up to the cursor.
 """
 

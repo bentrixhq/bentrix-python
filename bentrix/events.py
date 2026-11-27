@@ -67,7 +67,9 @@ class Events:
     """Bindings of functions to a running Bentrix's streams. See the module's documentation."""
 
     def __init__(self, client: Client, *, timeout_ms: int = 30_000) -> None:
-        self._c = client
+        # A ``bentrix.Bentrix`` from ``connect`` is accepted for its connection (the application's door).
+        door = getattr(client, "_door", None)
+        self._c = getattr(door, "client", client)
         self._timeout_ms = timeout_ms
         self._bindings: List[_Binding] = []
         self._queue: "queue.Queue[Any]" = queue.Queue()

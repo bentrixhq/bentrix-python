@@ -7,9 +7,13 @@ of each day — held as ticks, modelled from candles, or a tick file with hours 
 refuse what it will not stand on and keep the runs of days it will. The thresholds are yours; the report
 gives each year's counts to set them from.
 
+**A workbench, or an engine and an address.** ``quality``, ``bars`` and ``indicator`` take the workbench
+object (``data.bars(bench, "XAUUSD", "M15")``), through either door, or the form of before: the engine and
+the workbench's address (``data.bars(local, uri, "XAUUSD", "M15")``).
+
 **Nothing past the cursor.** Bars are read through the door a chart reads (``bars_get``), which never
 answers past the workbench's cursor — so a dataset is what the workbench has seen; advance it first
-(``Local.advance``) to take more. The candle still forming at the cursor is left out.
+(``bench.advance``) to take more. The candle still forming at the cursor is left out.
 
 **Bid and ask.** The recorded bars are the bid's; the ask is the bid plus the bar's own spread
 (``spread_points`` × the market's point). A long enters at the next open's ask and leaves at a bid; a
@@ -18,8 +22,9 @@ short enters at the next open's bid and leaves at an ask.
 
 from __future__ import annotations
 
+import functools
 import time
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple
 
 import numpy as np
 
@@ -28,6 +33,23 @@ from bentrix.local import Local
 COLUMNS = ("time_ms", "open", "high", "low", "close", "tick_volume", "spread_points")
 
 
+def _on_a_bench(f: Callable[..., Any]) -> Callable[..., Any]:
+    """``f(bench, ...)`` read as ``f(bench.bx, bench.uri, ...)``: the connection a workbench belongs to answers
+    ``call(tool, **args)`` as ``Local`` does, through whichever door it was opened."""
+
+    @functools.wraps(f)
+    def wrapped(first: Any, *args: Any, **kw: Any) -> Any:
+        from bentrix.core import Bench
+
+        if isinstance(first, Bench):
+            return f(first.bx, first.uri, *args, **kw)
+        return f(first, *args, **kw)
+
+    return wrapped
+
+
+
+@_on_a_bench
 def quality(local: Local, bench: str, symbol: str, timeout_s: float = 600.0) -> dict:
     """**The store's report of ``symbol`` over ``bench``'s days** (``data_quality``), waited for: its
     figures, and ``traded`` (every day the store holds candles for), ``modelled`` (traded days with no
@@ -74,6 +96,7 @@ def segments(report: dict, allow_modelled: bool = False, allow_holes: bool = Fal
     return runs
 
 
+@_on_a_bench
 def bars(local: Local, bench: str, symbol: str, interval: str = "H1", strict: bool = False, allow_modelled: bool = False, allow_holes: bool = False) -> Dict[str, np.ndarray]:
     """**Every closed candle of ``symbol`` on ``bench`` up to its cursor**, oldest first, as columns.
 
@@ -189,6 +212,7 @@ def purged_kfold(n: int, k: int, horizon: int, embargo: int = 0) -> Iterator[Tup
         yield np.flatnonzero(keep), test
 
 
+@_on_a_bench
 def indicator(local: Local, bench: str, symbol: str, interval: str, study: str, inputs: Optional[Dict[str, object]] = None, limit: int = 5000) -> Dict[str, np.ndarray]:
     """**An indicator's values over the workbench's candles up to its cursor**, with no chart open
     (``study_values``): ``study`` is ``"custom:<id>"`` for an Assay indicator of your indicators folder,

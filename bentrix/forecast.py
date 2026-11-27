@@ -23,6 +23,8 @@ from __future__ import annotations
 
 from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Union
 
+from ._runtime import Error
+
 import numpy as np
 
 #: The columns of an interval frame's rows.
@@ -289,7 +291,7 @@ def clear(door: Any, bench: str, symbol: Optional[str] = None, model: Optional[s
 EVAL_EVENT = "bentrix://forecasts/eval"
 
 
-class DeclinedByThePerson(Exception):
+class DeclinedByThePerson(Error):
     """The person pressed *No* on the evaluation's sheet. Not a failure: nothing was made or fetched."""
 
     def __init__(self, ask: str):
@@ -297,7 +299,7 @@ class DeclinedByThePerson(Exception):
         self.ask = ask
 
 
-class EvalFailed(Exception):
+class EvalFailed(Error):
     """The laboratory over the span was not made, or the run did not start on it — with Bentrix's why."""
 
     def __init__(self, ask: str, why: str):

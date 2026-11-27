@@ -1,6 +1,6 @@
 """**Experiment tracking hooks**: a run's identity logged to MLflow and/or Weights & Biases,
 whichever is installed — the ledger's id, the environment's version, the reward plugin, the seed — so a
-result found there leads back to the trial BENTRIX counted.
+result found there leads back to the trial Bentrix counted.
 
 Nothing here is required: without either library ``log_run`` answers which it could not reach and logs
 nothing. No figure goes anywhere a person did not send it: these are the person's own trackers.
@@ -13,9 +13,12 @@ from typing import Any, Dict, List, Optional
 ENV_VERSION = "bentrix/TradingEnv-v0"
 
 
-def identity(ledger_hash: Optional[str] = None, reward: Optional[str] = None, seed: Optional[int] = None, bench: Optional[str] = None, **more: Any) -> Dict[str, Any]:
-    """**What a tracked run names** — the tags every hook writes."""
+def identity(ledger_hash: Optional[str] = None, reward: Optional[str] = None, seed: Optional[int] = None, bench: Any = None, **more: Any) -> Dict[str, Any]:
+    """**What a tracked run names** — the tags every hook writes. ``bench`` a workbench's uri or the workbench object
+    (its uri is written); anything more by its own name (``digest=bench.manifest()["digest"]`` writes ``bentrix.digest``)."""
     from bentrix import _native
+
+    bench = getattr(bench, "uri", bench)
 
     tags = {"bentrix.env": ENV_VERSION, "bentrix.build": _native.build(), "bentrix.reward": reward, "bentrix.seed": seed, "bentrix.ledger_hash": ledger_hash, "bentrix.bench": bench}
     tags.update({f"bentrix.{k}": v for k, v in more.items()})

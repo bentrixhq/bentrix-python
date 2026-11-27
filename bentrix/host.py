@@ -1,6 +1,6 @@
-"""The study host: ``python -I -m bentrix.host <script.py>``, started by BENTRIX and nothing else.
+"""The study host: ``python -I -m bentrix.host <script.py>``, started by Bentrix and nothing else.
 
-It loads the script, which declares exactly one ``@study``, and answers BENTRIX on stdin/stdout, one
+It loads the script, which declares exactly one ``@study``, and answers Bentrix on stdin/stdout, one
 JSON object per line (the protocol is ``bentrix-pystudy``'s ``protocol.rs``):
 
 * ``describe`` -> ``{"op": "spec", "spec": ...}`` — the decorator's declaration.
@@ -16,7 +16,7 @@ JSON object per line (the protocol is ``bentrix-pystudy``'s ``protocol.rs``):
 * ``close`` -> the host exits.
 
 A value that is not a number travels as ``null``. **An error is not an answer**: the traceback goes to
-stderr and the host exits non-zero, and BENTRIX shows the exception's line.
+stderr and the host exits non-zero, and Bentrix shows the exception's line.
 
 ``print()`` in a script goes to stderr: stdout is the protocol's alone, and a stray line there would
 read as a broken answer.

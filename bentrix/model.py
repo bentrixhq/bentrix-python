@@ -24,6 +24,13 @@ from __future__ import annotations
 
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
+# The SDK's root error; under Bentrix's model host this file is shipped without the rest of the package
+# (`modelhost.rs`'s `write_package`), where a refusal is a RuntimeError as the root is.
+try:
+    from ._runtime import Error as _Root
+except ImportError:
+    _Root = RuntimeError
+
 _DECLARED: List[Dict[str, Any]] = []
 
 
@@ -207,7 +214,7 @@ _MEANING_FIELDS = ("schema_version", "reads", "high_means", "low_means", "act_ab
 _STEP_FIELDS = ("open", "high", "low", "close", "volume", "bands", "quantiles", "samples", "expected_ms")
 
 
-class OutputRefused(ValueError):
+class OutputRefused(_Root, ValueError):
     """**An output, a declaration or a meaning the contract refuses** — the sentence names the field and why."""
 
 

@@ -1,6 +1,6 @@
-"""Finding a running BENTRIX and getting a token from it.
+"""Finding a running Bentrix and getting a token from it.
 
-BENTRIX writes two files into its agents folder at every start: ``endpoint.json`` (``{url, pid,
+Bentrix writes two files into its agents folder at every start: ``endpoint.json`` (``{url, pid,
 catalogue_version}``, no secret) and ``local.secret`` (this run's same-user secret, readable by the
 person alone). A process that can read the second runs as that person, which is the only claim the
 secret makes; it presents it once to ``<url>/pair`` with its own name and is answered a token of its
@@ -37,7 +37,7 @@ class PairingRefused(BentrixError):
 
 
 def agents_dir() -> Path:
-    """The folder BENTRIX writes its endpoint and secret into.
+    """The folder Bentrix writes its endpoint and secret into.
 
     This mirrors ``bentrix_core::paths::user_dir(StoreKind::Data, "agents")`` and nothing else:
     ``%LOCALAPPDATA%\\BENTRIX\\agents`` when ``LOCALAPPDATA`` is set and non-empty; otherwise

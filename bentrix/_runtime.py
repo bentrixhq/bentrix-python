@@ -1,4 +1,4 @@
-"""The hand-written half of the BENTRIX SDK: the connection and everything that does not change
+"""The hand-written half of the Bentrix SDK: the connection and everything that does not change
 when a capability is added.
 
 It speaks MCP revision 2026-07-28 over Streamable HTTP with the standard library only: every request is
@@ -14,7 +14,7 @@ should be able to ``pip install`` it with nothing else. (Whether the package spe
 UNVERIFIED here; the wire below is the revision's own text.)
 
 The client declares NO optional capability (no elicitation, no tasks), so the server answers with the
-tools-only fallbacks: a question for the person is asked in BENTRIX's own window, and a long operation
+tools-only fallbacks: a question for the person is asked in Bentrix's own window, and a long operation
 returns a ``{"job": handle}`` that :class:`Job` polls.
 """
 
@@ -33,7 +33,7 @@ from typing import Any, Callable, Dict, Generic, Iterator, Optional, Tuple, Type
 
 PROTOCOL_VERSION = "2026-07-28"
 CLIENT_NAME = "bentrix-python-sdk"
-CLIENT_VERSION = "0.1.382"
+CLIENT_VERSION = "0.2.383"
 
 #: **Busy, try again**: the JSON-RPC code Bentrix answers when it refused a request BEFORE doing
 #: anything with it — one program's 20 calls a second spent, too many connections or streams, a task
@@ -60,8 +60,14 @@ def busy_wait_s(data: Any) -> float:
     return min(ms / 1000.0, BUSY_WAIT_MAX_S)
 
 
-class BentrixError(Exception):
-    """Base class of every error this package raises on purpose."""
+class Error(RuntimeError):
+    """**Every error Bentrix's SDK raises** (``bentrix.Error``): the tree's root - a tool's refusal (``ToolError``), a
+    request refused (``RpcError``), a connection not made (``NotRunning``, ``PairingRefused``), and the rest. A
+    ``RuntimeError``, as the engine's own refusals are."""
+
+
+# The root's earlier name, kept so a program written against it still catches everything.
+BentrixError = Error
 
 
 class RpcError(BentrixError):
@@ -146,14 +152,38 @@ def _scalar(v: Any) -> str:
     return str(v)
 
 
+def _from_address(values: Dict[str, Any]) -> None:
+    """**A workbench's address stands for its three parts**: given as ``bench`` - or, the first
+    of the three passed by position, as ``home`` - a ``bentrix://<home>/<owner>/bench/<name>`` address (or a
+    ``bentrix.Bench``, by its ``uri``) fills ``home``, ``owner`` and ``bench``. Parts given as before are left as
+    they are."""
+    for key in ("bench", "home"):
+        given = values.get(key)
+        arm = getattr(given, "_arm", None)
+        if callable(arm):
+            # A workbench handed itself is armed on its first use, as its own methods arm it; a refusal to arm (a sealed
+            # part) is the resource's to answer, never raised here in its place.
+            try:
+                arm()
+            except Error:
+                pass
+        v = getattr(given, "uri", given)
+        if isinstance(v, str) and v.startswith("bentrix://"):
+            parts = v[len("bentrix://"):].split("/")
+            if len(parts) >= 4 and parts[2] == "bench":
+                values.update(home=parts[0], owner=parts[1], bench=parts[3])
+            return
+
+
 def expand_template(template: str, required: Dict[str, Any], optional: Optional[Dict[str, Any]] = None) -> str:
     """Expand the RFC 6570 subset the catalogue uses: ``{name}`` and ``{?a,b}`` / ``{&a,b}``.
 
     A ``None`` optional is left out. A path variable that is missing is an error here, not a bad URI
     on the server.
     """
-    values = dict(required)
+    values = {k: v for k, v in required.items() if v is not None}
     values.update({k: v for k, v in (optional or {}).items() if v is not None})
+    _from_address(values)
     out = []
     i = 0
     while i < len(template):
@@ -197,7 +227,7 @@ def _parse_version(text: str) -> Tuple[int, int, int]:
 
 
 class Job(Generic[T]):
-    """A long operation. ``wait()`` returns the typed result; the person may have to act in BENTRIX's
+    """A long operation. ``wait()`` returns the typed result; the person may have to act in Bentrix's
     own window first (the job then reports ``awaiting_person``)."""
 
     def __init__(self, client: "Client", handle: Optional[str], parse: Callable[[Any], T], result: Any = None) -> None:

@@ -1,4 +1,4 @@
-"""**BENTRIX's engine in your own Python process**.
+"""**Bentrix's engine in your own Python process**.
 
 ``bentrix.backtest.run`` drives a ``Strategy`` over a laboratory workbench: at each closed candle of
 the interval it calls ``on_bar`` with that candle and a ``Context`` that sends orders through the
@@ -100,9 +100,9 @@ class Strategy:
         real account's proposal, waiting for the person's Send) or ``refused`` with its words."""
 
 
-def run(strategy: Strategy, bench: str, symbol: Optional[str] = None, interval: str = "H1", local: Optional[Local] = None, max_bars: Optional[int] = None, symbols: Optional[List[str]] = None) -> dict:
+def run(strategy: Strategy, bench: Any, symbol: Optional[str] = None, interval: str = "H1", local: Optional[Local] = None, max_bars: Optional[int] = None, symbols: Optional[List[str]] = None, to: Any = None) -> dict:
     """**Run ``strategy`` on ``bench`` (``bentrix://lab/<lab>/bench/<bench>``) from where it stands**,
-    to the end of its days (or ``max_bars``): the workbench advanced a tick at a time to each close of
+    to the end of its days (or ``max_bars``, or the moment ``to``): the workbench advanced a tick at a time to each close of
     ``interval`` as its chart cuts it — a D1 at the bench's zone's midnight, a W1 from Monday — every
     tick fed to its venue, so a stop or a target between two closes is met where
     the tape meets it — and ``on_bar`` handed the candle that closed. An order sent there fills at the
@@ -110,7 +110,19 @@ def run(strategy: Strategy, bench: str, symbol: Optional[str] = None, interval: 
 
     With ``symbols``, every one of those markets (each one the workbench holds) is walked on the one
     clock and ``on_bars`` is handed each one's closed candle by symbol; ``symbol`` (else the first of
-    ``symbols``) is the market an order takes when it names none."""
+    ``symbols``) is the market an order takes when it names none.
+
+    **A ``bentrix.Bench`` is the strategy's context**: given one (``bentrix.open(...).bench()``), its hooks are handed
+    that ``Bench`` - ``bench.buy(0.1, sl=...)``, ``bench.positions`` - and the run steps its engine; given an address,
+    a ``Context`` over ``local`` as before. The run steps the engine in this process, never the application."""
+    from .core import Bench as _Bench, Error, ms
+
+    acting = None
+    if isinstance(bench, _Bench):
+        door = bench.bx._door
+        if not hasattr(door, "local"):
+            raise Error("backtest.run steps the engine in this process: open the workspace with bentrix.open, not bentrix.connect")
+        acting, local, bench = bench, door.local, bench.uri
     local = local or Local()
     local.arm(bench)
     # Read, never stepped: a run with max_bars=0 leaves the clock where it stood (the strict audit of
@@ -128,7 +140,9 @@ def run(strategy: Strategy, bench: str, symbol: Optional[str] = None, interval: 
         symbol = held[0]
     walked = list(symbols) if symbols else [symbol]
     end = (state.get("bounds") or {}).get("to_ms")
-    ctx = Context(local, bench, symbol, walked)
+    if to is not None:
+        end = ms(to) if end is None else min(end, ms(to))
+    ctx: Any = acting if acting is not None else Context(local, bench, symbol, walked)
     strategy.on_start(ctx)
     seen = 0
     # Each close is the engine's own (S2) and one native call (section 2.4): the advance, the venue's
@@ -148,4 +162,4 @@ def run(strategy: Strategy, bench: str, symbol: Optional[str] = None, interval: 
             strategy.on_bar(closed[symbol], ctx)
             seen += 1
     strategy.on_end(ctx)
-    return {"bars": seen, "book": ctx.book()}
+    return {"bars": seen, "book": ctx.book if acting is not None else ctx.book()}

@@ -5,7 +5,7 @@ The function answers ``(lines, colors)``: the colours by channel — the line's 
 ``bar_color:0`` for the first of ``bar_colors`` — each ``rgba(...)`` or ``NONE`` where the bar takes
 none.
 
-Copy it into BENTRIX's indicators folder (Settings › Indicators shows where) and tick it there.
+Copy it into Bentrix's indicators folder (Settings › Indicators shows where) and tick it there.
 """
 
 import numpy as np

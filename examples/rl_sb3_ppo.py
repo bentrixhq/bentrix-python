@@ -1,4 +1,4 @@
-"""**PPO from Stable-Baselines3 on a BENTRIX workbench**, in your own Python process.
+"""**PPO from Stable-Baselines3 on a Bentrix workbench**, in your own Python process.
 
     pip install "bentrix[gym]" stable-baselines3 mlflow   # mlflow optional
     python rl_sb3_ppo.py bentrix://lab/<lab>/bench/<bench>

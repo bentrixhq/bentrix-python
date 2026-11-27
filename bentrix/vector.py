@@ -10,7 +10,7 @@ thousands of signal sets.
 the workbench's venue (``bentrix.backtest.run``) and the two trade lists set side by side — each trade's
 bid-side price (a long's exit, a short's entry) within ``PRICE_TOLERANCE_POINTS`` of the venue's fill and
 the same count of trades. **The ask side is measured and reported, not toleranced**: the venue quotes
-its own spread (on the CI tape the BENTRIX standard's 20 points where the bars
+its own spread (on the CI tape the Bentrix standard's 20 points where the bars
 record 10), so a long's entry and a short's exit part by the difference, and the grosses with them.
 Beside them, what the vectorised pass leaves out: the venue's commission and swap, read off its deals.
 """

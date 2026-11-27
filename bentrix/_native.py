@@ -61,6 +61,35 @@ def _load() -> ctypes.CDLL:
 
 _lib = _load()
 
+#: **The engine's interface this package speaks** (``bx_abi``): the package
+#: comes from PyPI and the library with Bentrix, and they update at different moments - a library of another interface
+#: is refused here, in a sentence naming both, before any of its functions is called with arguments it does not take.
+ABI = 2
+
+
+def _abi_of(lib: ctypes.CDLL) -> int:
+    """The interface ``lib`` speaks: its ``bx_abi()``, or 1 for a library from before it (0.1.382)."""
+    if not hasattr(lib, "bx_abi"):
+        return 1
+    lib.bx_abi.restype = ctypes.c_uint32
+    lib.bx_abi.argtypes = []
+    return int(lib.bx_abi())
+
+
+def _refuse_another_interface(lib: ctypes.CDLL) -> None:
+    have = _abi_of(lib)
+    if have == ABI:
+        return
+    lib.bx_version.restype = ctypes.c_char_p
+    built = (lib.bx_version() or b"?").decode("utf-8", "replace")
+    update = "update Bentrix" if have < ABI else "update this package (pip install -U bentrix)"
+    raise ImportError(
+        f"Bentrix's engine library speaks interface {have} (Bentrix {built}) and this package speaks {ABI}: {update}."
+    )
+
+
+_refuse_another_interface(_lib)
+
 _c = ctypes.c_char_p
 _vp = ctypes.c_void_p
 _i64 = ctypes.c_int64
@@ -76,7 +105,7 @@ def _sig(name: str, restype: Any, *argtypes: Any) -> None:
 _sig("bx_version", _c)
 _sig("bx_last_error", _c)
 _sig("bx_free", None, _vp)
-_sig("bx_open", _vp, _c, _c)
+_sig("bx_open", _vp, _c, _c, _c)
 _sig("bx_close", None, _vp)
 _sig("bx_call", _vp, _vp, _c, _c)
 _sig("bx_read", _vp, _vp, _c, _c)
@@ -88,9 +117,23 @@ _sig("bx_interval_ms", _i64, _c)
 _sig("bx_candle_span", ctypes.c_int, _vp, _c, _c, _i64, ctypes.POINTER(_i64), ctypes.POINTER(_i64))
 _sig("bx_next_close", _vp, _vp, _c, _c, _c, _i64, ctypes.c_int)
 _sig("bx_run_until", _vp, _vp, _c, _c, _c, ctypes.c_size_t, _i64, ctypes.c_int)
+# An engine older than 4.0's SDK has no bx_last_error_kind: a refused open is then a plain refusal.
+try:
+    _sig("bx_last_error_kind", _c)
+except AttributeError:
+    pass
+# An engine older than the step (0.1.383) has no bx_step: the rest of the binding stands, and step() says so.
+try:
+    _sig("bx_step", _vp, _vp, _c, _c)
+    _sig("bx_stats", _vp, _vp, ctypes.c_int)
+except AttributeError:
+    pass
 _sig("bx_snapshot", ctypes.c_int, _vp, _c, ctypes.POINTER(ctypes.c_uint64))
 _sig("bx_restore", ctypes.c_int, _vp, _c, ctypes.c_uint64, ctypes.POINTER(_i64))
 _sig("bx_make_markets", ctypes.c_int, _c, _c, _c, _c, ctypes.POINTER(_vp), ctypes.POINTER(_vp))
+# An engine older than the doctor (0.1.383) has no bx_workspace_held; workspace_held() says so.
+if hasattr(_lib, "bx_workspace_held"):
+    _sig("bx_workspace_held", _vp, _c)
 
 
 def _b(s: Optional[str]) -> Optional[bytes]:
@@ -100,6 +143,21 @@ def _b(s: Optional[str]) -> Optional[bytes]:
 def _why() -> str:
     w = _lib.bx_last_error()
     return w.decode("utf-8", "replace") if w else "Bentrix answered with no words"
+
+
+class OpenRefused(RuntimeError):
+    """A refused open, in Bentrix's words, with its word beside them: ``kind`` is ``held``, ``package`` or
+    ``argument`` (``""`` from an engine that says none)."""
+
+    def __init__(self, why: str, kind: str):
+        super().__init__(why)
+        self.kind = kind
+
+
+def _kind() -> str:
+    f = getattr(_lib, "bx_last_error_kind", None)
+    w = f() if f is not None and f.restype is _c else None
+    return w.decode("utf-8", "replace") if w else ""
 
 
 def _text(p: Optional[int]) -> str:
@@ -136,9 +194,9 @@ class Session:
     """An embedded Bentrix over ``workspace`` (yours when ``None``) and its recordings."""
 
     def __init__(self, workspace: Optional[str] = None, store: Optional[str] = None):
-        s = _lib.bx_open(_b(workspace), _b(store))
+        s = _lib.bx_open(_b(workspace), _b(store), b"Python")
         if not s:
-            raise RuntimeError(_why())
+            raise OpenRefused(_why(), _kind())
         self._s: Optional[int] = s
 
     def _open(self) -> int:
@@ -148,10 +206,18 @@ class Session:
 
     def call(self, tool: str, args: str) -> str:
         _json(args, "the arguments")
+        return self._call(tool, args)
+
+    def _call(self, tool: str, args: str) -> str:
+        """``call`` with arguments this package wrote itself, so already JSON: read once, by the engine."""
         return _text(_lib.bx_call(self._open(), _b(tool), _b(args)))
 
     def read(self, resource: str, vars: str) -> str:
         _json(vars, "the variables")
+        return self._read(resource, vars)
+
+    def _read(self, resource: str, vars: str) -> str:
+        """``read`` with variables this package wrote itself."""
         return _text(_lib.bx_read(self._open(), _b(resource), _b(vars)))
 
     def arm(self, bench: str, max_frames: int = 20000) -> None:
@@ -174,6 +240,17 @@ class Session:
     def run_until(self, bench: str, interval: str, symbols: Sequence[str], n: int, end_ms: Optional[int] = None) -> List[Close]:
         out = json.loads(_text(_lib.bx_run_until(self._open(), _b(bench), _b(interval), _b(json.dumps(list(symbols))), n, end_ms or 0, int(end_ms is not None))))
         return [_close(c) for c in out]
+
+    def step(self, bench: str, spec: str) -> str:
+        _json(spec, "the step")
+        if not hasattr(_lib, "bx_step"):
+            raise RuntimeError("This Bentrix engine has no step: it is older than 0.1.383.")
+        return _text(_lib.bx_step(self._open(), _b(bench), _b(spec)))
+
+    def stats(self, reset: bool = False) -> str:
+        if not hasattr(_lib, "bx_stats"):
+            raise RuntimeError("This Bentrix engine keeps no counters: it is older than 0.1.383.")
+        return _text(_lib.bx_stats(self._open(), int(reset)))
 
     def snapshot(self, bench: str) -> int:
         n = ctypes.c_uint64(0)
@@ -223,5 +300,16 @@ def make_tape(directory: str, first: str = "2024-03-04", last: str = "2024-03-08
     scale) from ``first`` to ``last``, and a workspace over it — its two paths."""
     ws, store = _vp(), _vp()
     markets = json.dumps([[symbol, 1.0]] + [[s, float(k)] for s, k in also])
-    _ok(_lib.bx_make_markets(_b(directory), _b(first), _b(last), _b(markets), ctypes.byref(ws), ctypes.byref(store)))
+    # A refused opening is raised with its word, as ``open``'s is.
+    if _lib.bx_make_markets(_b(directory), _b(first), _b(last), _b(markets), ctypes.byref(ws), ctypes.byref(store)) != 0:
+        raise OpenRefused(_why(), _kind())
     return (_text(ws.value), _text(store.value))
+
+
+def workspace_held(workspace: Optional[str] = None) -> dict:
+    """**Whether a workspace is held, and by what** (``python -m bentrix doctor``): the folder (yours when
+    ``None``), whether it exists, whether another process holds it - a window or ``--serve`` - and its
+    process, and the refusal an opening would meet. Asked as an opening asks, by the workspace's own lock."""
+    if not hasattr(_lib, "bx_workspace_held"):
+        raise RuntimeError("this engine library is older than bx_workspace_held; install the Bentrix this package came with")
+    return json.loads(_text(_lib.bx_workspace_held(_b(workspace))))
